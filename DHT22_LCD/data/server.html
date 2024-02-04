@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+     body {
+      min-width: 310px;
+    	max-width: 800px;
+    	height: 400px;
+      margin: 0 auto;
+    }
+    h2 {
+      font-family: Arial;
+      font-size: 2.5rem;
+      text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <h2>THEO DÕI NHIỆT ĐỘ TRONG NGÀY</h2>
+    <div id="temp" class-"container"></div>
+</body>
+<script>
+var chartT = new Highcharts.Chart({
+    chart:{ renderTo : 'temp' },
+    title: { text: 'Theo dõi nhiệt độ tủ máu' },
+    series: [{
+      showInLegend: false,
+      data: []
+    }],
+    plotOptions: {
+      line: { animation: false,
+        dataLabels: { enabled: true }
+      },
+      series: { color: '#059e8a' }
+    },
+    xAxis: { type: 'datetime',
+      dateTimeLabelFormats: { second: '%H:%M:%S' }
+    },
+    yAxis: {
+      title: { text: 'Nhiệt độ' }
+    },
+    credits: { enabled: false }
+  });
+  setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      if(chartT.series[0].data.length > 40) {
+        chartT.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartT.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/temperature", true);
+  xhttp.send();
+}, 30000 //1800000-30p 1 lan
+);
+</script>
